@@ -42,7 +42,7 @@ new class extends Component
     public function getProductsUrl(): string
     {
         if (tenant('id')) {
-            return '/#collection';
+            return '/products';
         }
         
         return '#locations';

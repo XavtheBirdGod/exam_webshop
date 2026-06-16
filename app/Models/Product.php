@@ -71,4 +71,12 @@ class Product extends Model
 
         return 'https://picsum.photos/400/400?random=' . $this->id;
     }
+
+    /**
+     * Get the route key for the model.
+     */
+    public function getRouteKeyName(): string
+    {
+        return 'slug';
+    }
 }

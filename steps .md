@@ -34,8 +34,8 @@ Dit document volgt een verticale integratie per feature. Alles wordt strikt via 
 ---
 
 ### Fase 4: Storefront (Klantweergave)
-- [ ] **Logica:** Geen controllers. Gebruik component methodes (`mount()`, `with()`) om actieve producten op te halen voor de huidige tenant, inclusief eager loading.
-- [ ] **View:** Bouw de storefront volledig via Full-Page Livewire componenten: `Shop\Home`, `Shop\Products` en de interactieve `Shop\ProductDetail` voor variant-selectie zonder page reloads.
+- [x] **Logica:** Geen controllers. Gebruik component methodes (`mount()`, `with()`) om actieve producten op te halen voor de huidige tenant, inclusief eager loading.
+- [x] **View:** Bouw de storefront volledig via Full-Page Livewire componenten: `Shop\Home`, `Shop\Products` en de interactieve `Shop\ProductDetail` voor variant-selectie zonder page reloads.
 
 ---
 
