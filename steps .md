@@ -16,8 +16,8 @@ Dit document volgt een verticale integratie per feature. Alles wordt strikt via 
 ---
 
 ### Fase 1: Project Fundament & Layouts
-- [ ] **Logica:** Initialiseer Laravel 13, Livewire 4 en het `stancl/tenancy` pakket. Configureer de database connectie en tenant/domain routes uitsluitend via `Route::livewire()`.
-- [ ] **View:** Installeer en configureer Flux UI. Ontwerp de basis layouts uitsluitend als Livewire layout bestanden (`components/layouts/app.blade.php`). Bouw de globale navigatiestructuur als een dynamisch Livewire component (`Navigation`).
+- [x] **Logica:** Initialiseer Laravel 13, Livewire 4 en het `stancl/tenancy` pakket. Configureer de database connectie en tenant/domain routes uitsluitend via `Route::livewire()`.
+- [x] **View:** Installeer en configureer Flux UI. Ontwerp de basis layouts uitsluitend als Livewire layout bestanden (`components/layouts/app.blade.php`). Bouw de globale navigatiestructuur als een dynamisch Livewire component (`Navigation`).
 
 ---
 
