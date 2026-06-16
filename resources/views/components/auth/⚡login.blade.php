@@ -2,8 +2,9 @@
 
 use App\Livewire\Forms\LoginForm;
 use Livewire\Component;
+use Livewire\Attributes\Layout;
 
-new class extends Component
+new #[Layout('components.layouts.app')] class extends Component
 {
     public LoginForm $form;
 

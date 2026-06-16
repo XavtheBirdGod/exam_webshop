@@ -22,8 +22,8 @@ Dit document volgt een verticale integratie per feature. Alles wordt strikt via 
 ---
 
 ### Fase 2: Authenticatie & Rollen (Platform vs Tenant)
-- [ ] **Logica:** Maak migraties voor `users` en koppel rollen (`platform_admin`, `vendor_admin`, `vendor_staff`, `customer`). Implementeer tenant-middleware en basis Policies.
-- [ ] **View:** Bouw de Login en Register flows als Full-Page Livewire componenten (`Auth\Login` en `Auth\Register`). Gebruik Livewire Form Objects voor de validatie en dataverwerking.
+- [x] **Logica:** Maak migraties voor `users` en koppel rollen (`platform_admin`, `vendor_admin`, `vendor_staff`, `customer`). Implementeer tenant-middleware en basis Policies.
+- [x] **View:** Bouw de Login en Register flows als Full-Page Livewire componenten (`Auth\Login` en `Auth\Register`). Gebruik Livewire Form Objects voor de validatie en dataverwerking.
 
 ---
 
