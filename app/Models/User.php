@@ -10,7 +10,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-#[Fillable(['name', 'email', 'password'])]
+use App\Enums\Role;
+
+#[Fillable(['name', 'email', 'password', 'role'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
@@ -27,6 +29,27 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'role' => Role::class,
         ];
+    }
+
+    public function tenants()
+    {
+        return $this->belongsToMany(Tenant::class, 'tenant_users', 'user_id', 'tenant_id')
+            ->withPivot('role')
+            ->withTimestamps();
+    }
+
+    public function isPlatformAdmin(): bool
+    {
+        return $this->role === Role::PLATFORM_ADMIN;
+    }
+
+    public function hasRoleInTenant($tenantId, $role): bool
+    {
+        return $this->tenants()
+            ->where('tenant_id', $tenantId)
+            ->wherePivot('role', $role)
+            ->exists();
     }
 }
