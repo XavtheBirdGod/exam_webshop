@@ -24,4 +24,9 @@ Route::middleware([
     PreventAccessFromCentralDomains::class,
 ])->group(function () {
     Route::livewire('/', 'shop.home');
+
+    Route::middleware('guest')->group(function () {
+        Route::livewire('/login', 'auth.login')->name('tenant.login');
+        Route::livewire('/register', 'auth.register')->name('tenant.register');
+    });
 });

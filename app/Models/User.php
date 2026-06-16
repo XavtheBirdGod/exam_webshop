@@ -19,6 +19,13 @@ class User extends Authenticatable
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
+    public function __construct(array $attributes = [])
+    {
+        parent::__construct($attributes);
+        
+        $this->connection = config('tenancy.database.central_connection') ?: config('database.default');
+    }
+
     /**
      * Get the attributes that should be cast.
      *

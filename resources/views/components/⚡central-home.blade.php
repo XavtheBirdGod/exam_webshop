@@ -115,11 +115,6 @@ new #[Layout('components.layouts.app')] class extends Component
                         <a href="{{ $url }}" class="inline-flex items-center justify-center px-8 py-3 rounded-full bg-[#d4a574] text-[#0f0f0f] font-bold text-sm hover:brightness-110 active:scale-95 transition-all">
                             Visit Storefront
                         </a>
-                        @if($domain)
-                            <span class="text-xs font-mono text-[#c9b896] tracking-wider">
-                                {{ $domain }}
-                            </span>
-                        @endif
                     </div>
                 </div>
             @empty
