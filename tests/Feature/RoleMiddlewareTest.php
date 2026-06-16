@@ -4,9 +4,16 @@ use App\Models\User;
 use App\Models\Tenant;
 use App\Enums\Role;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\DB;
 use function Pest\Laravel\actingAs;
 
 beforeEach(function () {
+    foreach (glob(database_path('tenant*')) as $file) {
+        if (is_file($file)) {
+            @unlink($file);
+        }
+    }
+
     // Setup test routes
     Route::middleware(['web', 'platform-admin'])->get('/test-platform-admin', function () {
         return 'platform-admin-success';
@@ -18,7 +25,17 @@ beforeEach(function () {
 });
 
 afterEach(function () {
+    if (tenancy()->initialized) {
+        tenancy()->end();
+    }
+    DB::disconnect('tenant');
     Tenant::all()->each->delete();
+
+    foreach (glob(database_path('tenant*')) as $file) {
+        if (is_file($file)) {
+            @unlink($file);
+        }
+    }
 });
 
 test('platform-admin middleware allows platform admins', function () {
