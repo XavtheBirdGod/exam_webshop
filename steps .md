@@ -28,8 +28,8 @@ Dit document volgt een verticale integratie per feature. Alles wordt strikt via 
 ---
 
 ### Fase 3: Catalogus & Productbeheer (Vendor Backoffice)
-- [ ] **Logica:** Migraties en modellen voor `shops`, `categories`, `products`, en `product_variants`. Implementeer tenant-scoping en gebruik Action classes, aangeroepen vanuit Livewire.
-- [ ] **View:** Bouw het Vendor Dashboard via Full-Page Livewire componenten (`Seller\Dashboard`). Maak overzichten met `Seller\Products\Index` en formulieren via `Seller\Products\Create` en `Seller\Products\Edit` (inclusief variantbeheer), alles met Livewire Form Objects.
+- [x] **Logica:** Migraties en modellen voor `shops`, `categories`, `products`, en `product_variants`. Implementeer tenant-scoping en gebruik Action classes, aangeroepen vanuit Livewire.
+- [x] **View:** Bouw het Vendor Dashboard via Full-Page Livewire componenten (`Seller\Dashboard`). Maak overzichten met `Seller\Products\Index` en formulieren via `Seller\Products\Create` en `Seller\Products\Edit` (inclusief variantbeheer), alles met Livewire Form Objects.
 
 ---
 

@@ -29,4 +29,12 @@ Route::middleware([
         Route::livewire('/login', 'auth.login')->name('tenant.login');
         Route::livewire('/register', 'auth.register')->name('tenant.register');
     });
+
+    // Tenant Backoffice
+    Route::middleware(['auth', 'tenant-role:shop_admin,shop_staff'])->prefix('seller')->group(function () {
+        Route::livewire('/dashboard', 'seller.dashboard')->name('seller.dashboard');
+        Route::livewire('/products', 'seller.products.index')->name('seller.products.index');
+        Route::livewire('/products/create', 'seller.products.create')->name('seller.products.create');
+        Route::livewire('/products/{product}/edit', 'seller.products.edit')->name('seller.products.edit');
+    });
 });

@@ -46,7 +46,7 @@ new #[Layout('components.layouts.app')] class extends Component
         </div>
 
         <!-- Asymmetric Location Cards Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-stretch">
+        <div id="locations" class="grid grid-cols-1 md:grid-cols-12 gap-8 items-stretch scroll-mt-24">
             @forelse($tenants as $index => $tenant)
                 @php
                     $domain = $tenant->domains->first()?->domain;

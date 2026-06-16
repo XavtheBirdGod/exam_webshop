@@ -48,6 +48,18 @@ class UserSeeder extends Seeder
         // Sync tenant role (Role::SHOP_ADMIN in shop-paris)
         $parisAdmin->tenants()->syncWithPivotValues(['shop-paris'], ['role' => Role::SHOP_ADMIN->value]);
 
+        // 4. London Shop Admin
+        $londonAdmin = User::updateOrCreate(
+            ['email' => 'london@rituals.com'],
+            [
+                'name' => 'London Admin',
+                'password' => Hash::make('password'),
+                'role' => Role::CUSTOMER,
+            ]
+        );
+        // Sync tenant role (Role::SHOP_ADMIN in shop-london)
+        $londonAdmin->tenants()->syncWithPivotValues(['shop-london'], ['role' => Role::SHOP_ADMIN->value]);
+
         // 4. Amsterdam Shop Staff
         $amsterdamStaff = User::updateOrCreate(
             ['email' => 'staff@rituals.com'],

@@ -22,6 +22,31 @@ new class extends Component
         
         return redirect()->to('/');
     }
+
+    public function getLocationsUrl(): string
+    {
+        if (tenant('id')) {
+            $port = request()->getPort();
+            $scheme = request()->getScheme();
+            $host = 'localhost';
+            
+            if ($port && !in_array($port, [80, 443])) {
+                return "{$scheme}://{$host}:{$port}/#locations";
+            }
+            return "{$scheme}://{$host}/#locations";
+        }
+        
+        return '#locations';
+    }
+
+    public function getProductsUrl(): string
+    {
+        if (tenant('id')) {
+            return '/#collection';
+        }
+        
+        return '#locations';
+    }
 };
 ?>
 
@@ -35,8 +60,8 @@ new class extends Component
         </div>
         
         <div class="flex gap-8 items-center text-sm font-accent uppercase tracking-widest text-[#9a9590]">
-            <a href="#" class="hover:text-[#d4a574] transition-colors">Products</a>
-            <a href="#" class="hover:text-[#d4a574] transition-colors">Locations</a>
+            <a href="{{ $this->getProductsUrl() }}" class="hover:text-[#d4a574] transition-colors">Products</a>
+            <a href="{{ $this->getLocationsUrl() }}" class="hover:text-[#d4a574] transition-colors">Locations</a>
             <a href="#" class="hover:text-[#d4a574] transition-colors">About</a>
         </div>
 
