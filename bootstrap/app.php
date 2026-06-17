@@ -14,6 +14,11 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->prependToPriorityList(
+            \Illuminate\Routing\Middleware\SubstituteBindings::class,
+            \Stancl\Tenancy\Middleware\InitializeTenancyByDomain::class
+        );
+        
         $middleware->alias([
             'platform-admin' => CheckPlatformAdmin::class,
             'tenant-role' => CheckTenantRole::class,

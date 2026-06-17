@@ -37,7 +37,26 @@ new #[Layout('components.layouts.app')] class extends Component
     #[Computed]
     public function selectedVariant(): ?ProductVariant
     {
-        return $this->product->variants->firstWhere('id', $this->selectedVariantId);
+        $variant = $this->product->variants->firstWhere('id', $this->selectedVariantId);
+        
+        // If there are no variants, mock one for the hardcoded item
+        if (!$variant) {
+            $variant = new ProductVariant();
+            $variant->sku = 'TEMP-01';
+            $variant->price_modifier = 0;
+        }
+
+        // Give it a temporary stock
+        $variant->stock_available = 10;
+
+        return $variant;
+    }
+
+    public function addToCart(): void
+    {
+        // Temporary logic for adding to cart
+        // Using flux or native Livewire dispatch if needed
+        $this->dispatch('cart-updated');
     }
 
     #[Computed]
@@ -179,6 +198,7 @@ new #[Layout('components.layouts.app')] class extends Component
                     <!-- Cart Call to Action -->
                     <button 
                         @if(!$this->selectedVariant || $this->selectedVariant->stock_available == 0) disabled @endif
+                        wire:click="addToCart"
                         class="w-full md:w-auto px-10 py-4 rounded-full bg-[#d4a574] text-[#0f0f0f] font-bold text-lg hover:brightness-110 active:scale-95 transition-all disabled:opacity-40 disabled:pointer-events-none disabled:bg-white/10 disabled:text-[#9a9590]"
                     >
                         @if($this->selectedVariant && $this->selectedVariant->stock_available > 0)
