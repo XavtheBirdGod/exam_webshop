@@ -40,8 +40,8 @@ Dit document volgt een verticale integratie per feature. Alles wordt strikt via 
 ---
 
 ### Fase 5: Winkelwagen & Visuele Voorraad (Klant)
-- [ ] **Logica:** Ontwikkel een Cart Service geïntegreerd met de basisvoorraadvelden (`stock_on_hand`, `stock_reserved`, `stock_available`). Roep deze aan vanuit het Livewire winkelwagen component.
-- [ ] **View:** Bouw het `Shop\Cart` Livewire component. Toon visuele voorraadwaarschuwingen (bijv. "Nog 2 op voorraad") en implementeer asynchrone updates voor hoeveelheden en prijzen via Livewire acties.
+- [x] **Logica:** Ontwikkel een Cart Service geïntegreerd met de basisvoorraadvelden (`stock_on_hand`, `stock_reserved`, `stock_available`). Roep deze aan vanuit het Livewire winkelwagen component.
+- [x] **View:** Bouw het `Shop\Cart` Livewire component. Toon visuele voorraadwaarschuwingen (bijv. "Nog 2 op voorraad") en implementeer asynchrone updates voor hoeveelheden en prijzen via Livewire acties.
 
 ---
 

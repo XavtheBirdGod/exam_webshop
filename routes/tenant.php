@@ -26,6 +26,7 @@ Route::middleware([
     Route::livewire('/', 'shop.home')->name('shop.home');
     Route::livewire('/products', 'shop.products')->name('shop.products');
     Route::livewire('/products/{product}', 'shop.product-detail')->name('shop.product-detail');
+    Route::livewire('/cart', 'shop.cart')->name('shop.cart');
 
     Route::middleware('guest')->group(function () {
         Route::livewire('/login', 'auth.login')->name('tenant.login');

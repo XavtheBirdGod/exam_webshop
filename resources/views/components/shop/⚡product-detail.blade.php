@@ -52,11 +52,31 @@ new #[Layout('components.layouts.app')] class extends Component
         return $variant;
     }
 
-    public function addToCart(): void
+    public function addToCart(\App\Services\CartService $cartService): void
     {
-        // Temporary logic for adding to cart
-        // Using flux or native Livewire dispatch if needed
-        $this->dispatch('cart-updated');
+        $variant = $this->selectedVariant;
+        if (!$variant) return;
+
+        try {
+            // Use 999 if it's our mock variant
+            $id = $variant->id ?? 999;
+            $cartService->add($id, 1);
+            
+            $this->dispatch('cart-updated');
+            
+            // Flux UI Toast if available, or session flash
+            try {
+                \Flux::toast('Added to cart');
+            } catch (\Throwable $e) {
+                session()->flash('message', 'Added to cart');
+            }
+        } catch (\Exception $e) {
+            try {
+                \Flux::toast($e->getMessage(), variant: 'danger');
+            } catch (\Throwable $e2) {
+                session()->flash('error', $e->getMessage());
+            }
+        }
     }
 
     #[Computed]

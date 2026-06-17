@@ -2,16 +2,28 @@
 
 use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
+use App\Services\CartService;
+use Livewire\Attributes\On;
 
 new class extends Component
 {
     public $shopName;
+    public int $cartCount = 0;
 
     public function mount()
     {
         $this->shopName = tenant('id') 
             ? ucfirst(str_replace(['shop-', 'rituals-'], '', tenant('id'))) 
             : 'Rituals';
+            
+        $this->updateCartCount();
+    }
+
+    #[On('cart-updated')]
+    public function updateCartCount()
+    {
+        $cartService = app(CartService::class);
+        $this->cartCount = $cartService->getCount();
     }
 
     public function logout()
@@ -95,9 +107,9 @@ new class extends Component
                 </div>
             @endauth
 
-            <button class="px-6 py-2 rounded-full bg-[#d4a574] text-[#0f0f0f] font-semibold text-sm hover:brightness-110 active:scale-95 transition-all">
-                Cart (0)
-            </button>
+            <a href="/cart" wire:navigate class="px-6 py-2 rounded-full bg-[#d4a574] text-[#0f0f0f] font-semibold text-sm hover:brightness-110 active:scale-95 transition-all">
+                Cart ({{ $cartCount }})
+            </a>
         </div>
     </div>
 </nav>
