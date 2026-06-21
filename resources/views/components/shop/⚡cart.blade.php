@@ -131,9 +131,9 @@ new #[Layout('components.layouts.app')] class extends Component
                     </span>
                 </div>
                 
-                <button class="w-full md:w-auto px-10 py-4 rounded-full bg-[#d4a574] text-[#0f0f0f] font-bold text-lg hover:brightness-110 active:scale-95 transition-all">
+                <a href="{{ route('shop.checkout.index') }}" wire:navigate class="w-full md:w-auto px-10 py-4 rounded-full bg-[#d4a574] text-[#0f0f0f] font-bold text-lg hover:brightness-110 active:scale-95 transition-all inline-block text-center">
                     Proceed to Checkout
-                </button>
+                </a>
             </div>
         @endif
     </div>

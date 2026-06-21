@@ -25,8 +25,12 @@ Route::middleware([
 ])->group(function () {
     Route::livewire('/', 'shop.home')->name('shop.home');
     Route::livewire('/products', 'shop.products')->name('shop.products');
-    Route::livewire('/products/{product}', 'shop.product-detail')->name('shop.product-detail');
+    Route::livewire('/products/{slug}', 'shop.product-detail')->name('shop.product-detail');
     Route::livewire('/cart', 'shop.cart')->name('shop.cart');
+    
+    Route::livewire('/checkout', 'shop.checkout.index')->name('shop.checkout.index');
+    Route::livewire('/checkout/success/{order}', 'shop.checkout.success')->name('shop.checkout.success');
+    Route::livewire('/checkout/cancel', 'shop.checkout.cancel')->name('shop.checkout.cancel');
 
     Route::middleware('guest')->group(function () {
         Route::livewire('/login', 'auth.login')->name('tenant.login');

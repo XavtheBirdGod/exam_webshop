@@ -12,9 +12,9 @@ new #[Layout('components.layouts.app')] class extends Component
     public ?int $selectedVariantId = null;
     public string $activeImagePath = '';
 
-    public function mount(Product $product): void
+    public function mount(string $slug): void
     {
-        $this->product = $product->load(['category', 'variants', 'images']);
+        $this->product = Product::with(['category', 'variants', 'images'])->where('slug', $slug)->firstOrFail();
         
         $firstVariant = $this->product->variants->first();
         if ($firstVariant) {
@@ -45,9 +45,6 @@ new #[Layout('components.layouts.app')] class extends Component
             $variant->sku = 'TEMP-01';
             $variant->price_modifier = 0;
         }
-
-        // Give it a temporary stock
-        $variant->stock_available = 10;
 
         return $variant;
     }

@@ -46,8 +46,8 @@ Dit document volgt een verticale integratie per feature. Alles wordt strikt via 
 ---
 
 ### Fase 6: Checkout Flow (Klant)
-- [ ] **Logica:** Vervang de CheckoutController door een Full-Page Livewire component (`Checkout\Index`). Behandel hierin de winkelwagen validatie, snapshotting in `order_items`, het aanmaken van `orders`/`payments` en de Stripe/Mollie redirect.
-- [ ] **View:** Bouw het formulier voor adresgegevens en betaalmethode ín het `Checkout\Index` component. Maak `Checkout\Success` en `Checkout\Cancel` Full-Page componenten voor de afhandeling na de redirect.
+- [x] **Logica:** Vervang de CheckoutController door een Full-Page Livewire component (`Checkout\Index`). Behandel hierin de winkelwagen validatie, snapshotting in `order_items`, het aanmaken van `orders`/`payments` en de Stripe/Mollie redirect.
+- [x] **View:** Bouw het formulier voor adresgegevens en betaalmethode ín het `Checkout\Index` component. Maak `Checkout\Success` en `Checkout\Cancel` Full-Page componenten voor de afhandeling na de redirect.
 
 ---
 
