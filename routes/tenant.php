@@ -23,7 +23,7 @@ Route::middleware([
     InitializeTenancyByDomain::class,
     PreventAccessFromCentralDomains::class,
 ])->group(function () {
-    Route::livewire('/', 'shop.home')->name('shop.home');
+    Route::livewire('/', 'shop.products')->name('shop.home');
     Route::livewire('/products', 'shop.products')->name('shop.products');
     Route::livewire('/products/{slug}', 'shop.product-detail')->name('shop.product-detail');
     Route::livewire('/cart', 'shop.cart')->name('shop.cart');

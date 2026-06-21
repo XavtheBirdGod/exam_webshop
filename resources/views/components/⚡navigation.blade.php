@@ -54,7 +54,7 @@ new class extends Component
     public function getProductsUrl(): string
     {
         if (tenant('id')) {
-            return '/products';
+            return '/';
         }
         
         return '#locations';
@@ -72,9 +72,7 @@ new class extends Component
         </div>
         
         <div class="flex gap-8 items-center text-sm font-accent uppercase tracking-widest text-[#9a9590]">
-            @if(tenant('id'))
-                <a href="{{ $this->getProductsUrl() }}" class="hover:text-[#d4a574] transition-colors">Products</a>
-            @endif
+            <a href="{{ $this->getProductsUrl() }}" class="hover:text-[#d4a574] transition-colors">Products</a>
             <a href="{{ $this->getLocationsUrl() }}" class="hover:text-[#d4a574] transition-colors">Locations</a>
             <a href="#" class="hover:text-[#d4a574] transition-colors">About</a>
         </div>
