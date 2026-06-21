@@ -49,8 +49,9 @@ new #[Layout('components.layouts.app')] class extends Component
         return $variant;
     }
 
-    public function addToCart(\App\Services\CartService $cartService): void
+    public function addToCart(): void
     {
+        $cartService = app(\App\Services\CartService::class);
         $variant = $this->selectedVariant;
         if (!$variant) return;
 

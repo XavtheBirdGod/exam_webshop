@@ -14,7 +14,8 @@
         "laravel/tinker": "^3.0",
         "livewire/flux": "*",
         "livewire/livewire": "*",
-        "stancl/tenancy": "*"
+        "stancl/tenancy": "*",
+        "stripe/stripe-php": "*"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",

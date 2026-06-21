@@ -7,8 +7,9 @@ use App\Services\CartService;
 
 new #[Layout('components.layouts.app')] class extends Component
 {
-    public function updateQuantity(CartService $cartService, int $variantId, int $quantity)
+    public function updateQuantity(int $variantId, int $quantity)
     {
+        $cartService = app(CartService::class);
         try {
             $cartService->updateQuantity($variantId, $quantity);
             $this->dispatch('cart-updated');
@@ -21,8 +22,9 @@ new #[Layout('components.layouts.app')] class extends Component
         }
     }
 
-    public function removeItem(CartService $cartService, int $variantId)
+    public function removeItem(int $variantId)
     {
+        $cartService = app(CartService::class);
         $cartService->remove($variantId);
         $this->dispatch('cart-updated');
     }

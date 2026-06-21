@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\DB;
 
 new #[Layout('components.layouts.app')] class extends Component
 {
-    #[Validate('required|email')]
+    #[Validate('required|email:rfc,dns')]
     public string $email = '';
 
     #[Validate('required|string|max:255')]
@@ -28,8 +28,8 @@ new #[Layout('components.layouts.app')] class extends Component
     #[Validate('required|string|max:20')]
     public string $zip_code = '';
 
-    #[Validate('required|in:credit_card,ideal,paypal')]
-    public string $payment_method = 'ideal';
+    #[Validate('required|in:credit_card,ideal,stripe')]
+    public string $payment_method = 'stripe';
 
     public function mount()
     {
@@ -41,8 +41,9 @@ new #[Layout('components.layouts.app')] class extends Component
         }
     }
 
-    public function processCheckout(CartService $cartService)
+    public function processCheckout()
     {
+        $cartService = app(CartService::class);
         $this->validate();
 
         $items = $cartService->getCartDetails();
@@ -56,8 +57,21 @@ new #[Layout('components.layouts.app')] class extends Component
             DB::beginTransaction();
 
             $totalAmount = 0;
+            $lineItems = [];
             foreach ($items as $item) {
-                $totalAmount += ($item['price'] * 100) * $item['quantity'];
+                $unitAmount = (int) round($item['price'] * 100);
+                $totalAmount += $unitAmount * $item['quantity'];
+                
+                $lineItems[] = [
+                    'price_data' => [
+                        'currency' => 'eur',
+                        'product_data' => [
+                            'name' => $item['name'] . ' (' . $item['variant_value'] . ')',
+                        ],
+                        'unit_amount' => $unitAmount,
+                    ],
+                    'quantity' => $item['quantity'],
+                ];
             }
 
             // Create Order
@@ -90,7 +104,7 @@ new #[Layout('components.layouts.app')] class extends Component
                     'order_id' => $order->id,
                     'product_variant_id' => $item['id'] === 999 ? null : $item['id'],
                     'name' => $item['name'] . ' (' . $item['variant_value'] . ')',
-                    'price' => $item['price'] * 100,
+                    'price' => (int) round($item['price'] * 100),
                     'quantity' => $item['quantity'],
                 ]);
             }
@@ -100,11 +114,30 @@ new #[Layout('components.layouts.app')] class extends Component
             // Clear the cart
             $cartService->clear();
 
-            // Simulate redirect to payment provider and success
-            // In a real app we would redirect to Mollie/Stripe here, and their webhook would update status to 'paid'
-            $order->update(['status' => 'paid']);
+            // Stripe Checkout Integration
+            $stripe = new \Stripe\StripeClient(config('services.stripe.secret') ?: env('STRIPE_SECRET'));
 
-            return redirect()->route('shop.checkout.success', ['order' => $order->id]);
+            $paymentMethodTypes = ['card'];
+            if ($this->payment_method === 'ideal') {
+                $paymentMethodTypes = ['ideal'];
+            } elseif ($this->payment_method === 'stripe') {
+                // If they specifically choose "Stripe Checkout", we let Stripe present all enabled methods
+                $paymentMethodTypes = ['card', 'ideal'];
+            }
+
+            $checkout_session = $stripe->checkout->sessions->create([
+                'line_items' => $lineItems,
+                'mode' => 'payment',
+                'success_url' => route('shop.checkout.success', ['order' => $order->id]) . '?session_id={CHECKOUT_SESSION_ID}',
+                'cancel_url' => route('shop.checkout.cancel', ['order' => $order->id]),
+                'payment_method_types' => $paymentMethodTypes,
+                'customer_email' => $this->email,
+                'client_reference_id' => $order->id,
+            ]);
+
+            $order->update(['transaction_id' => $checkout_session->id]);
+
+            $this->redirect($checkout_session->url);
 
         } catch (\Exception $e) {
             DB::rollBack();
@@ -137,7 +170,7 @@ new #[Layout('components.layouts.app')] class extends Component
                     <div class="space-y-4">
                         <div>
                             <label class="block text-sm font-semibold text-[#9a9590] mb-2">Email Address</label>
-                            <input type="email" wire:model="email" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-[#e8e4df] focus:border-[#d4a574] focus:ring-1 focus:ring-[#d4a574] transition-colors outline-none" placeholder="you@example.com">
+                            <input type="email" wire:model.blur="email" pattern="[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}" title="Please enter a valid email address (e.g., name@example.com)" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-[#e8e4df] focus:border-[#d4a574] focus:ring-1 focus:ring-[#d4a574] transition-colors outline-none" placeholder="you@example.com" required>
                             @error('email') <span class="text-red-400 text-xs mt-1 block">{{ $message }}</span> @enderror
                         </div>
                     </div>
@@ -179,6 +212,13 @@ new #[Layout('components.layouts.app')] class extends Component
                 <div class="bg-[#161615] rounded-[32px] border border-white/5 p-8">
                     <h2 class="text-xl font-bold text-[#e8e4df] mb-6">Payment Method</h2>
                     <div class="space-y-3">
+                        <label class="flex items-center gap-4 p-4 rounded-xl border border-white/10 cursor-pointer hover:bg-white/5 transition-colors {{ $payment_method === 'stripe' ? 'bg-white/5 border-[#d4a574]' : '' }}">
+                            <input type="radio" wire:model="payment_method" value="stripe" class="text-[#d4a574] focus:ring-[#d4a574] bg-transparent border-white/20">
+                            <div class="flex flex-col">
+                                <span class="text-[#e8e4df] font-semibold">Stripe Checkout</span>
+                                <span class="text-xs text-[#9a9590]">Pay with Credit Card, iDEAL, or PayPal securely via Stripe.</span>
+                            </div>
+                        </label>
                         <label class="flex items-center gap-4 p-4 rounded-xl border border-white/10 cursor-pointer hover:bg-white/5 transition-colors {{ $payment_method === 'ideal' ? 'bg-white/5 border-[#d4a574]' : '' }}">
                             <input type="radio" wire:model="payment_method" value="ideal" class="text-[#d4a574] focus:ring-[#d4a574] bg-transparent border-white/20">
                             <span class="text-[#e8e4df] font-semibold">iDEAL</span>
@@ -186,10 +226,6 @@ new #[Layout('components.layouts.app')] class extends Component
                         <label class="flex items-center gap-4 p-4 rounded-xl border border-white/10 cursor-pointer hover:bg-white/5 transition-colors {{ $payment_method === 'credit_card' ? 'bg-white/5 border-[#d4a574]' : '' }}">
                             <input type="radio" wire:model="payment_method" value="credit_card" class="text-[#d4a574] focus:ring-[#d4a574] bg-transparent border-white/20">
                             <span class="text-[#e8e4df] font-semibold">Credit Card</span>
-                        </label>
-                        <label class="flex items-center gap-4 p-4 rounded-xl border border-white/10 cursor-pointer hover:bg-white/5 transition-colors {{ $payment_method === 'paypal' ? 'bg-white/5 border-[#d4a574]' : '' }}">
-                            <input type="radio" wire:model="payment_method" value="paypal" class="text-[#d4a574] focus:ring-[#d4a574] bg-transparent border-white/20">
-                            <span class="text-[#e8e4df] font-semibold">PayPal</span>
                         </label>
                     </div>
                     @error('payment_method') <span class="text-red-400 text-xs mt-2 block">{{ $message }}</span> @enderror
