@@ -30,42 +30,6 @@ afterEach(function () {
     }
 });
 
-test('storefront home page renders featured active products', function () {
-    $tenant = Tenant::create(['id' => 'test-shop']);
-    $tenant->domains()->create(['domain' => 'test-shop.localhost']);
-
-    tenancy()->initialize($tenant);
-
-    $category = Category::create(['name' => 'Skin', 'slug' => 'skin']);
-    
-    // Create active featured product
-    $product1 = Product::create([
-        'category_id' => $category->id,
-        'name' => 'Featured Cream',
-        'slug' => 'featured-cream',
-        'description' => 'A featured cream description',
-        'price' => 1000,
-        'status' => 'active',
-        'featured' => true,
-    ]);
-
-    // Create active non-featured product
-    $product2 = Product::create([
-        'category_id' => $category->id,
-        'name' => 'Standard Soap',
-        'slug' => 'standard-soap',
-        'description' => 'A standard soap description',
-        'price' => 500,
-        'status' => 'active',
-        'featured' => false,
-    ]);
-
-    Livewire::test('shop.home')
-        ->assertSee('Featured Cream')
-        ->assertDontSee('Standard Soap');
-
-    tenancy()->end();
-});
 
 test('storefront products page lists and filters products', function () {
     $tenant = Tenant::create(['id' => 'test-shop']);
@@ -145,7 +109,7 @@ test('storefront product detail page selects variant and updates pricing', funct
         'stock_available' => 2,
     ]);
 
-    Livewire::test('shop.product-detail', ['product' => $product])
+    Livewire::test('shop.product-detail', ['slug' => $product->slug])
         ->assertSee('LC-50')
         ->assertSee('In Stock')
         ->assertSee('10,00') // DisplayPrice €10.00

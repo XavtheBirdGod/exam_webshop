@@ -12,9 +12,9 @@ new #[Layout('components.layouts.app')] class extends Component
     public ?int $selectedVariantId = null;
     public string $activeImagePath = '';
 
-    public function mount(Product $product): void
+    public function mount(string $slug): void
     {
-        $this->product = $product->load(['category', 'variants', 'images']);
+        $this->product = Product::with(['category', 'variants', 'images'])->where('slug', $slug)->firstOrFail();
         
         $firstVariant = $this->product->variants->first();
         if ($firstVariant) {
@@ -46,17 +46,35 @@ new #[Layout('components.layouts.app')] class extends Component
             $variant->price_modifier = 0;
         }
 
-        // Give it a temporary stock
-        $variant->stock_available = 10;
-
         return $variant;
     }
 
     public function addToCart(): void
     {
-        // Temporary logic for adding to cart
-        // Using flux or native Livewire dispatch if needed
-        $this->dispatch('cart-updated');
+        $cartService = app(\App\Services\CartService::class);
+        $variant = $this->selectedVariant;
+        if (!$variant) return;
+
+        try {
+            // Use 999 if it's our mock variant
+            $id = $variant->id ?? 999;
+            $cartService->add($id, 1);
+            
+            $this->dispatch('cart-updated');
+            
+            // Flux UI Toast if available, or session flash
+            try {
+                \Flux::toast('Added to cart');
+            } catch (\Throwable $e) {
+                session()->flash('message', 'Added to cart');
+            }
+        } catch (\Exception $e) {
+            try {
+                \Flux::toast($e->getMessage(), variant: 'danger');
+            } catch (\Throwable $e2) {
+                session()->flash('error', $e->getMessage());
+            }
+        }
     }
 
     #[Computed]

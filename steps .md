@@ -40,14 +40,14 @@ Dit document volgt een verticale integratie per feature. Alles wordt strikt via 
 ---
 
 ### Fase 5: Winkelwagen & Visuele Voorraad (Klant)
-- [ ] **Logica:** Ontwikkel een Cart Service geïntegreerd met de basisvoorraadvelden (`stock_on_hand`, `stock_reserved`, `stock_available`). Roep deze aan vanuit het Livewire winkelwagen component.
-- [ ] **View:** Bouw het `Shop\Cart` Livewire component. Toon visuele voorraadwaarschuwingen (bijv. "Nog 2 op voorraad") en implementeer asynchrone updates voor hoeveelheden en prijzen via Livewire acties.
+- [x] **Logica:** Ontwikkel een Cart Service geïntegreerd met de basisvoorraadvelden (`stock_on_hand`, `stock_reserved`, `stock_available`). Roep deze aan vanuit het Livewire winkelwagen component.
+- [x] **View:** Bouw het `Shop\Cart` Livewire component. Toon visuele voorraadwaarschuwingen (bijv. "Nog 2 op voorraad") en implementeer asynchrone updates voor hoeveelheden en prijzen via Livewire acties.
 
 ---
 
 ### Fase 6: Checkout Flow (Klant)
-- [ ] **Logica:** Vervang de CheckoutController door een Full-Page Livewire component (`Checkout\Index`). Behandel hierin de winkelwagen validatie, snapshotting in `order_items`, het aanmaken van `orders`/`payments` en de Stripe/Mollie redirect.
-- [ ] **View:** Bouw het formulier voor adresgegevens en betaalmethode ín het `Checkout\Index` component. Maak `Checkout\Success` en `Checkout\Cancel` Full-Page componenten voor de afhandeling na de redirect.
+- [x] **Logica:** Vervang de CheckoutController door een Full-Page Livewire component (`Checkout\Index`). Behandel hierin de winkelwagen validatie, snapshotting in `order_items`, het aanmaken van `orders`/`payments` en de Stripe/Mollie redirect.
+- [x] **View:** Bouw het formulier voor adresgegevens en betaalmethode ín het `Checkout\Index` component. Maak `Checkout\Success` en `Checkout\Cancel` Full-Page componenten voor de afhandeling na de redirect.
 
 ---
 

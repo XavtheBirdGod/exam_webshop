@@ -129,7 +129,7 @@ new #[Layout('components.layouts.app')] class extends Component
         </div>
 
         <!-- Extra Decorative Elements -->
-        <div class="absolute -bottom-24 -left-24 w-96 h-96 rounded-full border border-[#d4a574]/5 blur-3xl"></div>
-        <div class="absolute -top-24 -right-24 w-96 h-96 rounded-full border border-[#c9b896]/5 blur-3xl"></div>
+        <div class="absolute -bottom-24 -left-24 w-96 h-96 rounded-full border border-[#d4a574]/5 blur-3xl pointer-events-none"></div>
+        <div class="absolute -top-24 -right-24 w-96 h-96 rounded-full border border-[#c9b896]/5 blur-3xl pointer-events-none"></div>
     </div>
 </div>
