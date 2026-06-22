@@ -36,5 +36,26 @@ class AppServiceProvider extends ServiceProvider
                     \Stancl\Tenancy\Middleware\InitializeTenancyByDomain::class,
                 ]);
         });
+
+        // Enforce middleware priority for Tenancy to prevent auth running before tenancy initialization
+        $this->app->booted(function () {
+            $router = $this->app['router'];
+            $refRouter = new \ReflectionClass(get_class($router));
+            if ($refRouter->hasProperty('middlewarePriority')) {
+                $prop = $refRouter->getProperty('middlewarePriority');
+                $prop->setAccessible(true);
+                $priority = $prop->getValue($router);
+                
+                $tenancyMiddlewares = [
+                    'Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains',
+                    'Stancl\Tenancy\Middleware\InitializeTenancyByDomain',
+                ];
+                
+                $priority = array_values(array_diff($priority, $tenancyMiddlewares));
+                $priority = array_merge($tenancyMiddlewares, $priority);
+                
+                $prop->setValue($router, $priority);
+            }
+        });
     }
 }

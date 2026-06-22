@@ -30,7 +30,7 @@ class UserSeeder extends Seeder
             [
                 'name' => 'Amsterdam Admin',
                 'password' => Hash::make('password'),
-                'role' => Role::CUSTOMER,
+                'role' => Role::SHOP_ADMIN,
             ]
         );
         // Sync tenant role (Role::SHOP_ADMIN in shop-amsterdam)
@@ -42,7 +42,7 @@ class UserSeeder extends Seeder
             [
                 'name' => 'Paris Admin',
                 'password' => Hash::make('password'),
-                'role' => Role::CUSTOMER,
+                'role' => Role::SHOP_ADMIN,
             ]
         );
         // Sync tenant role (Role::SHOP_ADMIN in shop-paris)
@@ -54,19 +54,19 @@ class UserSeeder extends Seeder
             [
                 'name' => 'London Admin',
                 'password' => Hash::make('password'),
-                'role' => Role::CUSTOMER,
+                'role' => Role::SHOP_ADMIN,
             ]
         );
         // Sync tenant role (Role::SHOP_ADMIN in shop-london)
         $londonAdmin->tenants()->syncWithPivotValues(['shop-london'], ['role' => Role::SHOP_ADMIN->value]);
 
-        // 4. Amsterdam Shop Staff
+        // 5. Amsterdam Shop Staff
         $amsterdamStaff = User::updateOrCreate(
             ['email' => 'staff@rituals.com'],
             [
                 'name' => 'Amsterdam Staff',
                 'password' => Hash::make('password'),
-                'role' => Role::CUSTOMER,
+                'role' => Role::SHOP_STAFF,
             ]
         );
         // Sync tenant role (Role::SHOP_STAFF in shop-amsterdam)

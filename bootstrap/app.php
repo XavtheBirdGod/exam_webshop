@@ -15,7 +15,12 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->prependToPriorityList(
-            \Illuminate\Routing\Middleware\SubstituteBindings::class,
+            \Stancl\Tenancy\Middleware\InitializeTenancyByDomain::class,
+            \Illuminate\Session\Middleware\StartSession::class
+        );
+        
+        $middleware->prependToPriorityList(
+            \Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains::class,
             \Stancl\Tenancy\Middleware\InitializeTenancyByDomain::class
         );
         
@@ -23,6 +28,10 @@ return Application::configure(basePath: dirname(__DIR__))
             'platform-admin' => CheckPlatformAdmin::class,
             'tenant-role' => CheckTenantRole::class,
         ]);
+        
+        $middleware->redirectGuestsTo(fn (Request $request) => 
+            tenant('id') ? route('tenant.login') : route('login')
+        );
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(

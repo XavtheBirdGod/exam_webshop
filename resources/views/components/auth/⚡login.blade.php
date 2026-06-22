@@ -12,6 +12,23 @@ new #[Layout('components.layouts.app')] class extends Component
     {
         $this->form->authenticate();
 
+        $user = auth()->user();
+
+        if ($user->isPlatformAdmin()) {
+            return redirect()->intended('/admin/dashboard');
+        }
+
+        $primaryTenant = $user->tenants()->wherePivotIn('role', ['shop_admin', 'shop_staff'])->first();
+
+        if ($primaryTenant && $primaryTenant->domains->count() > 0) {
+            $domain = $primaryTenant->domains->first()->domain;
+            $scheme = request()->getScheme();
+            $port = request()->getPort();
+            $portSuffix = ($port && !in_array($port, [80, 443])) ? ":{$port}" : "";
+
+            return redirect()->away("{$scheme}://{$domain}{$portSuffix}/seller/dashboard");
+        }
+
         return redirect()->intended('/');
     }
 };

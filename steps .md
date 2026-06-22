@@ -52,8 +52,8 @@ Dit document volgt een verticale integratie per feature. Alles wordt strikt via 
 ---
 
 ### Fase 7: Webhooks, Orderverwerking & Order UI (Achtergrond + Vendor)
-- [ ] **Logica:** Bouw een externe Webhook listener (enige uitzondering: dit mag een invokable controller/route zijn voor de API webhook van Stripe/Mollie). Verwerk hier de `payment_logs`, `stock_movements` en queue de mails.
-- [ ] **View:** Breid de vendor backoffice uit met `Seller\Orders\Index` en `Seller\Orders\Detail` Livewire componenten. Werk de statussen real-time bij (optioneel via Livewire polling of broadcasting) zodat de verkoper direct de betalingsstatus ziet.
+- [x] **Logica:** Bouw een externe Webhook listener (enige uitzondering: dit mag een invokable controller/route zijn voor de API webhook van Stripe/Mollie). Verwerk hier de `payment_logs`, `stock_movements` en queue de mails.
+- [x] **View:** Breid de vendor backoffice uit met `Seller\Orders\Index` en `Seller\Orders\Detail` Livewire componenten. Werk de statussen real-time bij (optioneel via Livewire polling of broadcasting) zodat de verkoper direct de betalingsstatus ziet.
 
 ---
 

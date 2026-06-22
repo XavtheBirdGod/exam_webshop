@@ -125,7 +125,7 @@ new #[Layout('components.layouts.app')] class extends Component
                     <div class="{{ $colSpan }} relative overflow-hidden bg-[#161615] rounded-[32px] border {{ $borderColor }} p-6 md:p-8 flex flex-col justify-between group hover:border-[#d4a574]/40 transition-all duration-300 transform hover:-translate-y-1 min-h-[360px]">
                         <!-- Product Background Cover -->
                         <div class="absolute inset-0 z-0">
-                            <img src="{{ $product->getImageUrl() }}" alt="{{ $product->name }}" class="w-full h-full object-cover opacity-10 group-hover:scale-105 transition-transform duration-700">
+                            <img src="{{ $product->getImageUrl() }}" alt="" class="w-full h-full object-cover opacity-10 group-hover:scale-105 transition-transform duration-700">
                             <div class="absolute inset-0 bg-gradient-to-t from-[#0f0f0f] via-[#0f0f0f]/90 to-transparent"></div>
                         </div>
 

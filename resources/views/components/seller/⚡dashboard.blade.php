@@ -107,9 +107,15 @@ new #[Layout('components.layouts.app')] class extends Component
     </div>
 
     <!-- Quick Navigation Link Card -->
-    <div class="mt-8 flex justify-center">
+    <div class="mt-8 flex justify-center gap-8">
         <a href="/seller/products" class="inline-flex items-center gap-2 text-[#d4a574] hover:text-[#c9b896] font-bold text-sm tracking-wider uppercase font-accent transition-colors">
-            <span>Manage All Products</span>
+            <span>Manage Products</span>
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+            </svg>
+        </a>
+        <a href="{{ route('seller.orders.index') }}" wire:navigate class="inline-flex items-center gap-2 text-[#d4a574] hover:text-[#c9b896] font-bold text-sm tracking-wider uppercase font-accent transition-colors">
+            <span>Manage Orders</span>
             <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
                 <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd" />
             </svg>

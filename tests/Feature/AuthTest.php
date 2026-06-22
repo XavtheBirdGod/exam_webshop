@@ -33,3 +33,32 @@ test('users can log in on the central site', function () {
     expect(auth()->check())->toBeTrue();
     expect(auth()->user()->id)->toBe($user->id);
 });
+
+test('shop admin of one tenant cannot log in to another tenant store', function () {
+    $amsterdamAdmin = User::factory()->create([
+        'email' => 'amsterdam_test@rituals.com',
+        'password' => bcrypt('password123'),
+        'role' => Role::SHOP_ADMIN,
+    ]);
+    
+    $tenantAmsterdam = \App\Models\Tenant::create(['id' => 'shop-amsterdam-test']);
+    $tenantParis = \App\Models\Tenant::create(['id' => 'shop-paris-test']);
+    
+    $amsterdamAdmin->tenants()->attach($tenantAmsterdam->id, ['role' => Role::SHOP_ADMIN->value]);
+    
+    // Initialize tenancy for Paris
+    tenancy()->initialize($tenantParis);
+    
+    Livewire::test('auth.login')
+        ->set('form.email', 'amsterdam_test@rituals.com')
+        ->set('form.password', 'password123')
+        ->call('login')
+        ->assertHasErrors(['form.email']);
+        
+    expect(auth()->check())->toBeFalse();
+    
+    tenancy()->end();
+    
+    $tenantAmsterdam->delete();
+    $tenantParis->delete();
+});
