@@ -26,7 +26,7 @@ class LoginForm extends Form
 
         if (! Auth::attempt($this->only(['email', 'password']), $this->remember)) {
             throw ValidationException::withMessages([
-                'email' => trans('auth.failed'),
+                'form.email' => trans('auth.failed'),
             ]);
         }
 

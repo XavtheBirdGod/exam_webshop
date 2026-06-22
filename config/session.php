@@ -127,7 +127,7 @@ return [
     |
     */
 
-    'cookie' => env('SESSION_COOKIE', 'shop_session'),
+    'cookie' => env('SESSION_COOKIE', 'webshop_session'),
 
     /*
     |--------------------------------------------------------------------------
