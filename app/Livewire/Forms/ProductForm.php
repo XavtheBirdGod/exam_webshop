@@ -43,7 +43,7 @@ class ProductForm extends Form
     /**
      * Store the product using the action.
      */
-    public function store(SaveProductAction $action): Product
+    public function store(SaveProductAction $action, ?Product $product = null): Product
     {
         $this->validate();
 
@@ -68,7 +68,7 @@ class ProductForm extends Form
             }, $this->variants),
         ];
 
-        return $action->execute($data);
+        return $action->execute($data, $product);
     }
 
     /**

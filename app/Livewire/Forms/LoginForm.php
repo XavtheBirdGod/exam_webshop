@@ -26,8 +26,21 @@ class LoginForm extends Form
 
         if (! Auth::attempt($this->only(['email', 'password']), $this->remember)) {
             throw ValidationException::withMessages([
-                'email' => trans('auth.failed'),
+                'form.email' => trans('auth.failed'),
             ]);
+        }
+
+        $user = Auth::user();
+        if ($user && tenant('id')) {
+            if (in_array($user->role, [\App\Enums\Role::SHOP_ADMIN, \App\Enums\Role::SHOP_STAFF])) {
+                $hasAccess = $user->tenants()->where('tenant_id', tenant('id'))->exists();
+                if (!$hasAccess) {
+                    Auth::logout();
+                    throw ValidationException::withMessages([
+                        'form.email' => 'You do not have access to this store.',
+                    ]);
+                }
+            }
         }
     }
 }

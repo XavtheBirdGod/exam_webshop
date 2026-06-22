@@ -59,6 +59,61 @@ new class extends Component
         
         return '#locations';
     }
+
+    public function getVendorDashboardUrl(): string
+    {
+        $user = auth()->user();
+        if ($user->isPlatformAdmin()) {
+            $centralDomains = config('tenancy.central_domains', ['localhost']);
+            if (in_array(request()->getHost(), $centralDomains)) {
+                return '/admin/dashboard';
+            }
+            
+            $centralDomain = reset($centralDomains);
+            $scheme = request()->getScheme();
+            $port = request()->getPort();
+            
+            if ($port && !in_array($port, [80, 443])) {
+                return "{$scheme}://{$centralDomain}:{$port}/admin/dashboard";
+            }
+            return "{$scheme}://{$centralDomain}/admin/dashboard";
+        }
+
+        $primaryTenant = $user->tenants()->wherePivotIn('role', ['shop_admin', 'shop_staff'])->first();
+
+        if ($primaryTenant && $primaryTenant->domains->count() > 0) {
+            $domain = $primaryTenant->domains->first()->domain;
+            
+            if (request()->getHost() === $domain) {
+                return '/seller/dashboard';
+            }
+            
+            $scheme = request()->getScheme();
+            $port = request()->getPort();
+            
+            if ($port && !in_array($port, [80, 443])) {
+                return "{$scheme}://{$domain}:{$port}/seller/dashboard";
+            }
+            return "{$scheme}://{$domain}/seller/dashboard";
+        }
+
+        return '/seller/dashboard';
+    }
+
+    public function hasVendorAccess(): bool
+    {
+        if (!auth()->check()) {
+            return false;
+        }
+        
+        $user = auth()->user();
+        
+        if ($user->isPlatformAdmin()) {
+            return true;
+        }
+
+        return $user->tenants()->wherePivotIn('role', ['shop_admin', 'shop_staff'])->exists();
+    }
 };
 ?>
 
@@ -98,6 +153,13 @@ new class extends Component
                             <p class="text-xs font-mono text-[#9a9590]">Signed in as</p>
                             <p class="text-sm font-semibold text-[#e8e4df] truncate">{{ auth()->user()->name }}</p>
                         </div>
+                        
+                        @if($this->hasVendorAccess())
+                            <a href="{{ $this->getVendorDashboardUrl() }}" wire:navigate class="block w-full text-left px-4 py-2 text-sm text-[#e8e4df] hover:bg-white/5 hover:text-[#d4a574] transition-colors border-b border-white/5">
+                                Vendor Dashboard
+                            </a>
+                        @endif
+
                         <button wire:click="logout" class="block w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-white/5 transition-colors">
                             Log out
                         </button>

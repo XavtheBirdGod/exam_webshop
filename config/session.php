@@ -60,7 +60,7 @@ return [
     |
     */
 
-    'files' => storage_path('framework/sessions'),
+    'files' => base_path('storage/framework/sessions'),
 
     /*
     |--------------------------------------------------------------------------
@@ -127,10 +127,7 @@ return [
     |
     */
 
-    'cookie' => env(
-        'SESSION_COOKIE',
-        Str::slug((string) env('APP_NAME', 'laravel')).'-session'
-    ),
+    'cookie' => env('SESSION_COOKIE', 'webshop_session'),
 
     /*
     |--------------------------------------------------------------------------
@@ -156,7 +153,19 @@ return [
     |
     */
 
-    'domain' => env('SESSION_DOMAIN'),
+    'domain' => (function() {
+        if (app()->runningInConsole()) {
+            return env('SESSION_DOMAIN');
+        }
+        $host = request()->getHost();
+        if (filter_var($host, FILTER_VALIDATE_IP)) {
+            return null;
+        }
+        if ($host === 'localhost' || str_ends_with($host, '.localhost')) {
+            return null;
+        }
+        return env('SESSION_DOMAIN');
+    })(),
 
     /*
     |--------------------------------------------------------------------------
