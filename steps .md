@@ -58,11 +58,11 @@ Dit document volgt een verticale integratie per feature. Alles wordt strikt via 
 ---
 
 ### Fase 8: Platform Dashboard (Admin)
-- [ ] **Logica:** Haal complexe queries op (platformomzet, omzet per vendor, failed payments, actieve tenants) via Livewire Computed Properties in het dashboard component.
-- [ ] **View:** Bouw het centrale `Admin\Dashboard` Full-Page Livewire component. Implementeer interactieve datatabellen en grafieken (via Flux UI) die asynchroon filteren op datums of vendor zonder page reloads.
+- [x] **Logica:** Haal complexe queries op (platformomzet, omzet per vendor, failed payments, actieve tenants) via Livewire Computed Properties in het dashboard component.
+- [x] **View:** Bouw het centrale `Admin\Dashboard` Full-Page Livewire component. Implementeer interactieve datatabellen en grafieken (via Flux UI) die asynchroon filteren op datums of vendor zonder page reloads.
 
 ---
 
 ### Fase 9: Quality Assurance & Testing flows
-- [ ] **Logica:** Schrijf Pest backend tests voor tenant-isolatie en policies. Zorg dat je via Livewire's test helpers test (`livewire()->test(ProductDetail::class)`) in plaats van HTTP requests waar mogelijk.
-- [ ] **View/Flow:** Schrijf Livewire integratietests die de volledige gebruikersreis testen (product toevoegen aan cart component -> actie op checkout component -> order generatie) om te bewijzen dat Livewire en de actions naadloos samenwerken.
+- [x] **Logica:** Schrijf Pest backend tests voor tenant-isolatie en policies. Zorg dat je via Livewire's test helpers test (`livewire()->test(ProductDetail::class)`) in plaats van HTTP requests waar mogelijk.
+- [x] **View/Flow:** Schrijf Livewire integratietests die de volledige gebruikersreis testen (product toevoegen aan cart component -> actie op checkout component -> order generatie) om te bewijzen dat Livewire en de actions naadloos samenwerken.

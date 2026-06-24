@@ -18,7 +18,7 @@ use Livewire\Attributes\On;
         <div class="flex gap-8 items-center text-sm font-accent uppercase tracking-widest text-[#9a9590]">
             <a href="<?php echo e($this->getProductsUrl()); ?>" class="hover:text-[#d4a574] transition-colors">Products</a>
             <a href="<?php echo e($this->getLocationsUrl()); ?>" class="hover:text-[#d4a574] transition-colors">Locations</a>
-            <a href="#" class="hover:text-[#d4a574] transition-colors">About</a>
+            <a href="/contact" wire:navigate class="hover:text-[#d4a574] transition-colors">Contact</a>
         </div>
 
         <div class="flex gap-4 items-center text-[#e8e4df]">
@@ -45,7 +45,8 @@ use Livewire\Attributes\On;
                         
                         <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($this->hasVendorAccess()): ?>
                             <a href="<?php echo e($this->getVendorDashboardUrl()); ?>" wire:navigate class="block w-full text-left px-4 py-2 text-sm text-[#e8e4df] hover:bg-white/5 hover:text-[#d4a574] transition-colors border-b border-white/5">
-                                Vendor Dashboard
+                                <?php echo e(auth()->user()->isPlatformAdmin() ? 'Admin Dashboard' : 'Vendor Dashboard'); ?>
+
                             </a>
                         <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 

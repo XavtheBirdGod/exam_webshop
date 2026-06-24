@@ -31,6 +31,7 @@ Route::middleware([
     Route::livewire('/products', 'shop.products')->name('shop.products');
     Route::livewire('/products/{slug}', 'shop.product-detail')->name('shop.product-detail');
     Route::livewire('/cart', 'shop.cart')->name('shop.cart');
+    Route::livewire('/contact', 'shop.contact')->name('shop.contact');
     
     Route::livewire('/checkout', 'shop.checkout.index')->name('shop.checkout.index');
     Route::livewire('/checkout/success/{order}', 'shop.checkout.success')->name('shop.checkout.success');

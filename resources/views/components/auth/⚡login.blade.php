@@ -15,7 +15,17 @@ new #[Layout('components.layouts.app')] class extends Component
         $user = auth()->user();
 
         if ($user->isPlatformAdmin()) {
-            return redirect()->intended('/admin/dashboard');
+            $centralDomains = config('tenancy.central_domains', ['localhost']);
+            if (in_array(request()->getHost(), $centralDomains)) {
+                return redirect()->intended('/admin/dashboard');
+            }
+
+            $centralDomain = reset($centralDomains);
+            $scheme = request()->getScheme();
+            $port = request()->getPort();
+            $portSuffix = ($port && !in_array($port, [80, 443])) ? ":{$port}" : "";
+
+            return redirect()->away("{$scheme}://{$centralDomain}{$portSuffix}/admin/dashboard");
         }
 
         $primaryTenant = $user->tenants()->wherePivotIn('role', ['shop_admin', 'shop_staff'])->first();
