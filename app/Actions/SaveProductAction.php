@@ -82,13 +82,28 @@ class SaveProductAction
                 }
             }
 
-            // Handle images
-            if (isset($data['images'])) {
-                foreach ($data['images'] as $imageData) {
+            // Handle image deletions
+            if (!empty($data['delete_image_ids'])) {
+                foreach ($data['delete_image_ids'] as $imageId) {
+                    $img = $product->images()->find($imageId);
+                    if ($img) {
+                        \Illuminate\Support\Facades\Storage::disk('public')->delete($img->path);
+                        $img->delete();
+                    }
+                }
+            }
+
+            // Handle new image uploads
+            if (!empty($data['new_image_paths'])) {
+                $hasPrimary = $product->images()->where('is_primary', true)->exists();
+
+                foreach ($data['new_image_paths'] as $index => $path) {
                     $product->images()->create([
-                        'path' => $imageData['path'],
-                        'is_primary' => $imageData['is_primary'] ?? false,
+                        'path'       => $path,
+                        // Make the first uploaded image the primary if none exists yet
+                        'is_primary' => (!$hasPrimary && $index === 0),
                     ]);
+                    $hasPrimary = true;
                 }
             }
 

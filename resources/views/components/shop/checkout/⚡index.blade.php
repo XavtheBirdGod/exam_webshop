@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\DB;
 
 new #[Layout('components.layouts.app')] class extends Component
 {
-    #[Validate('required|email:rfc,dns')]
+    #[Validate('required|email:rfc')]
     public string $email = '';
 
     #[Validate('required|string|max:255')]
@@ -115,7 +115,9 @@ new #[Layout('components.layouts.app')] class extends Component
             $cartService->clear();
 
             // Stripe Checkout Integration
-            $stripe = new \Stripe\StripeClient(config('services.stripe.secret') ?: env('STRIPE_SECRET'));
+            $stripe = app()->bound(\Stripe\StripeClient::class)
+                ? app(\Stripe\StripeClient::class)
+                : new \Stripe\StripeClient(config('services.stripe.secret') ?: env('STRIPE_SECRET'));
 
             $paymentMethodTypes = ['card'];
             if ($this->payment_method === 'ideal') {

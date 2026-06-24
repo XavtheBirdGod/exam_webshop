@@ -6,9 +6,12 @@ use App\Actions\SaveProductAction;
 use App\Models\Product;
 use Illuminate\Support\Str;
 use Livewire\Form;
+use Livewire\WithFileUploads;
 
 class ProductForm extends Form
 {
+    use WithFileUploads;
+
     public string $name = '';
     public string $slug = '';
     public string $description = '';
@@ -18,25 +21,35 @@ class ProductForm extends Form
     public bool $featured = false;
     public array $variants = [];
 
+    /** @var \Livewire\Features\SupportFileUploads\TemporaryUploadedFile[] */
+    public array $images = [];
+
+    /** Paths of images already saved (used on edit to show previews) */
+    public array $existingImages = [];
+
+    /** IDs of existing images the user wants to delete */
+    public array $deleteImageIds = [];
+
     /**
      * Define validation rules.
      */
     protected function rules(): array
     {
         return [
-            'name' => 'required|string|max:255',
-            'slug' => 'nullable|string|max:255',
-            'description' => 'nullable|string',
-            'price' => 'required|numeric|min:0',
-            'category_id' => 'nullable|exists:categories,id',
-            'status' => 'required|in:active,inactive,draft',
-            'featured' => 'required|boolean',
-            'variants' => 'required|array|min:1',
-            'variants.*.name' => 'required|string|max:255',
-            'variants.*.value' => 'required|string|max:255',
-            'variants.*.sku' => 'required|string|max:255|distinct',
-            'variants.*.price_modifier' => 'required|numeric',
-            'variants.*.stock_on_hand' => 'required|integer|min:0',
+            'name'                        => 'required|string|max:255',
+            'slug'                        => 'nullable|string|max:255',
+            'description'                 => 'nullable|string',
+            'price'                       => 'required|numeric|min:0',
+            'category_id'                 => 'nullable|exists:categories,id',
+            'status'                      => 'required|in:active,inactive,draft',
+            'featured'                    => 'required|boolean',
+            'variants'                    => 'required|array|min:1',
+            'variants.*.name'             => 'required|string|max:255',
+            'variants.*.value'            => 'required|string|max:255',
+            'variants.*.sku'              => 'required|string|max:255|distinct',
+            'variants.*.price_modifier'   => 'required|numeric',
+            'variants.*.stock_on_hand'    => 'required|integer|min:0',
+            'images.*'                    => 'nullable|image|mimes:jpeg,jpg,png,webp,gif|max:2048',
         ];
     }
 
@@ -47,22 +60,31 @@ class ProductForm extends Form
     {
         $this->validate();
 
+        // Store uploaded images to the public disk and collect their paths
+        $uploadedPaths = [];
+        foreach ($this->images as $image) {
+            $path = $image->store('products', 'public');
+            $uploadedPaths[] = $path;
+        }
+
         $data = [
-            'name' => $this->name,
-            'slug' => $this->slug ?: Str::slug($this->name),
-            'description' => $this->description,
-            'price' => (int) round($this->price * 100), // convert to cents
-            'category_id' => $this->category_id,
-            'status' => $this->status,
-            'featured' => $this->featured,
-            'variants' => array_map(function ($variant) {
+            'name'            => $this->name,
+            'slug'            => $this->slug ?: Str::slug($this->name),
+            'description'     => $this->description,
+            'price'           => (int) round($this->price * 100),
+            'category_id'     => $this->category_id,
+            'status'          => $this->status,
+            'featured'        => $this->featured,
+            'new_image_paths' => $uploadedPaths,
+            'delete_image_ids'=> $this->deleteImageIds,
+            'variants'        => array_map(function ($variant) {
                 return [
-                    'id' => $variant['id'] ?? null,
-                    'name' => $variant['name'],
-                    'value' => $variant['value'],
-                    'sku' => $variant['sku'],
-                    'price_modifier' => (int) round($variant['price_modifier'] * 100), // convert to cents
-                    'stock_on_hand' => (int) $variant['stock_on_hand'],
+                    'id'             => $variant['id'] ?? null,
+                    'name'           => $variant['name'],
+                    'value'          => $variant['value'],
+                    'sku'            => $variant['sku'],
+                    'price_modifier' => (int) round($variant['price_modifier'] * 100),
+                    'stock_on_hand'  => (int) $variant['stock_on_hand'],
                     'stock_reserved' => $variant['stock_reserved'] ?? 0,
                 ];
             }, $this->variants),
@@ -76,22 +98,29 @@ class ProductForm extends Form
      */
     public function fillFromProduct(Product $product): void
     {
-        $this->name = $product->name;
-        $this->slug = $product->slug;
+        $this->name        = $product->name;
+        $this->slug        = $product->slug;
         $this->description = $product->description ?? '';
-        $this->price = $product->price / 100;
+        $this->price       = $product->price / 100;
         $this->category_id = $product->category_id;
-        $this->status = $product->status;
-        $this->featured = (bool) $product->featured;
-        
+        $this->status      = $product->status;
+        $this->featured    = (bool) $product->featured;
+
+        // Load existing images for preview in the edit form
+        $this->existingImages = $product->images->map(fn ($img) => [
+            'id'         => $img->id,
+            'url'        => asset('storage/' . $img->path),
+            'is_primary' => $img->is_primary,
+        ])->toArray();
+
         $this->variants = $product->variants->map(function ($v) {
             return [
-                'id' => $v->id,
-                'name' => $v->name,
-                'value' => $v->value,
-                'sku' => $v->sku,
+                'id'             => $v->id,
+                'name'           => $v->name,
+                'value'          => $v->value,
+                'sku'            => $v->sku,
                 'price_modifier' => $v->price_modifier / 100,
-                'stock_on_hand' => $v->stock_on_hand,
+                'stock_on_hand'  => $v->stock_on_hand,
                 'stock_reserved' => $v->stock_reserved,
             ];
         })->toArray();

@@ -2,6 +2,7 @@
 
 use Livewire\Component;
 use Livewire\Attributes\Layout;
+use Livewire\WithFileUploads;
 use App\Livewire\Forms\ProductForm;
 use App\Actions\SaveProductAction;
 use App\Models\Product;
@@ -9,12 +10,14 @@ use App\Models\Category;
 
 new #[Layout('components.layouts.app')] class extends Component
 {
+    use WithFileUploads;
+
     public Product $product;
     public ProductForm $form;
 
     public function mount(Product $product)
     {
-        $this->product = $product->load('variants');
+        $this->product = $product->load(['variants', 'images']);
         $this->form->fillFromProduct($this->product);
     }
 
@@ -34,6 +37,22 @@ new #[Layout('components.layouts.app')] class extends Component
     {
         unset($this->form->variants[$index]);
         $this->form->variants = array_values($this->form->variants);
+    }
+
+    public function removeNewImage($index)
+    {
+        $images = $this->form->images;
+        unset($images[$index]);
+        $this->form->images = array_values($images);
+    }
+
+    public function markExistingImageForDeletion($imageId)
+    {
+        $this->form->deleteImageIds[] = $imageId;
+        // Also remove from existingImages display
+        $this->form->existingImages = array_values(
+            array_filter($this->form->existingImages, fn($img) => $img['id'] !== $imageId)
+        );
     }
 
     public function save(SaveProductAction $action)
@@ -132,6 +151,87 @@ new #[Layout('components.layouts.app')] class extends Component
             <div class="flex items-center">
                 <input wire:model="form.featured" id="featured" type="checkbox" value="1" class="h-4 w-4 text-[#d4a574] focus:ring-[#d4a574] border-white/10 rounded bg-[#0f0f0f]">
                 <label for="featured" class="ml-2 block text-sm text-[#9a9590] font-accent uppercase tracking-widest">Featured Product</label>
+            </div>
+        </div>
+
+        <!-- Product Images Section -->
+        <div class="bg-[#161615] rounded-[2rem] border border-white/10 p-8 shadow-[0_2px_12px_rgba(0,0,0,0.06)] space-y-6">
+            <h3 class="text-xl font-bold text-[#d4a574] mb-4">Product Images</h3>
+
+            <!-- Existing saved images -->
+            @if(!empty($form->existingImages))
+                <div>
+                    <p class="text-xs font-mono uppercase tracking-wider text-[#9a9590] mb-3">Saved Images</p>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                        @foreach($form->existingImages as $img)
+                            <div class="relative group rounded-2xl overflow-hidden border border-white/10 aspect-square">
+                                <img src="{{ $img['url'] }}" alt="Product image" class="w-full h-full object-cover">
+                                <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                    <button type="button"
+                                        wire:click="markExistingImageForDeletion({{ $img['id'] }})"
+                                        wire:confirm="Remove this image from the product?"
+                                        class="p-2 rounded-full bg-red-500/80 hover:bg-red-500 text-white transition-colors">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                        </svg>
+                                    </button>
+                                </div>
+                                @if($img['is_primary'])
+                                    <span class="absolute top-2 left-2 text-[10px] font-mono uppercase tracking-wider bg-[#d4a574] text-[#0f0f0f] px-2 py-0.5 rounded-full">Primary</span>
+                                @endif
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            @endif
+
+            <!-- Upload area for new images -->
+            <div>
+                <p class="text-xs font-mono uppercase tracking-wider text-[#9a9590] mb-3">Add More Images</p>
+                <div x-data="{ dragging: false }"
+                     @dragover.prevent="dragging = true"
+                     @dragleave.prevent="dragging = false"
+                     @drop.prevent="dragging = false"
+                     :class="dragging ? 'border-[#d4a574] bg-[#d4a574]/5' : 'border-white/10 hover:border-white/25'"
+                     class="relative border-2 border-dashed rounded-2xl p-8 text-center transition-all cursor-pointer">
+                    <input type="file"
+                           wire:model="form.images"
+                           id="product-images-edit"
+                           multiple
+                           accept="image/jpeg,image/jpg,image/png,image/webp,image/gif"
+                           class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 mx-auto text-[#9a9590] mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    <p class="text-[#9a9590] text-sm font-accent">Drop images here or <span class="text-[#d4a574] underline">click to browse</span></p>
+                    <p class="text-[#555] text-xs mt-1 font-mono">JPEG, PNG, WEBP or GIF — max 2 MB each</p>
+                </div>
+            </div>
+
+            @error('form.images.*') <span class="text-xs text-red-400 mt-1 block font-accent">{{ $message }}</span> @enderror
+
+            <!-- Previews of newly staged uploads -->
+            @if(!empty($form->images))
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                    @foreach($form->images as $index => $image)
+                        <div class="relative group rounded-2xl overflow-hidden border border-white/10 aspect-square">
+                            <img src="{{ $image->temporaryUrl() }}" alt="Preview" class="w-full h-full object-cover">
+                            <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                <button type="button" wire:click="removeNewImage({{ $index }})"
+                                    class="p-2 rounded-full bg-red-500/80 hover:bg-red-500 text-white transition-colors">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
+                            </div>
+                            <span class="absolute top-2 left-2 text-[10px] font-mono uppercase tracking-wider bg-white/20 text-white px-2 py-0.5 rounded-full">New</span>
+                        </div>
+                    @endforeach
+                </div>
+            @endif
+
+            <div wire:loading wire:target="form.images" class="text-sm text-[#9a9590] font-accent mt-2">
+                Uploading...
             </div>
         </div>
 

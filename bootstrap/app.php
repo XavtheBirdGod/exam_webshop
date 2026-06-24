@@ -24,6 +24,10 @@ return Application::configure(basePath: dirname(__DIR__))
             \Stancl\Tenancy\Middleware\InitializeTenancyByDomain::class
         );
         
+        $middleware->validateCsrfTokens(except: [
+            'livewire/update'
+        ]);
+        
         $middleware->alias([
             'platform-admin' => CheckPlatformAdmin::class,
             'tenant-role' => CheckTenantRole::class,
