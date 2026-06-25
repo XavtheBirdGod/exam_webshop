@@ -105,7 +105,12 @@ new #[Layout('components.layouts.app')] class extends Component
                                 <span class="w-8 text-center text-sm font-semibold text-[#e8e4df]">
                                     {{ $item['quantity'] }}
                                 </span>
-                                <button wire:click="updateQuantity({{ $item['id'] }}, {{ $item['quantity'] + 1 }})" class="w-10 h-10 flex items-center justify-center text-[#e8e4df] hover:bg-white/10 transition-colors">
+                                <button
+                                    wire:click="updateQuantity({{ $item['id'] }}, {{ $item['quantity'] + 1 }})"
+                                    @if($item['quantity'] >= $item['stock_available']) disabled @endif
+                                    class="w-10 h-10 flex items-center justify-center text-[#e8e4df] hover:bg-white/10 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                                    title="{{ $item['quantity'] >= $item['stock_available'] ? 'Maximum stock reached' : 'Increase quantity' }}"
+                                >
                                     +
                                 </button>
                             </div>
