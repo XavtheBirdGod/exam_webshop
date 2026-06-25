@@ -115,20 +115,7 @@ new #[Layout('components.layouts.app')] class extends Component
                     <img src="{{ $activeImagePath }}" alt="{{ $product->name }}" class="w-full h-full object-cover">
                 </div>
 
-                <!-- Gallery Thumbnails -->
-                @if($product->images->isNotEmpty())
-                    <div class="flex gap-4 overflow-x-auto pb-2">
-                        <!-- Add fallback/primary default thumbnail first if relevant -->
-                        @foreach($product->images as $image)
-                            <button 
-                                wire:click="selectImage('{{ $image->path }}')" 
-                                class="w-20 h-20 rounded-2xl overflow-hidden border transition-all {{ $activeImagePath === $image->path ? 'border-[#d4a574]' : 'border-white/5 opacity-60 hover:opacity-100' }}"
-                            >
-                                <img src="{{ $image->path }}" alt="Thumbnail" class="w-full h-full object-cover">
-                            </button>
-                        @endforeach
-                    </div>
-                @endif
+
             </div>
 
             <!-- Right Column: Product Specs & Options -->

@@ -2,6 +2,7 @@
 use Livewire\Component;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Url;
+use Livewire\WithPagination;
 use App\Models\Product;
 use App\Models\Category;
 ?>
@@ -129,6 +130,12 @@ use App\Models\Category;
                         </div>
                     </div>
                 <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>
+            </div>
+
+            <!-- Pagination Links -->
+            <div class="mt-16">
+                <?php echo e($products->links(data: ['scrollTo' => false])); ?>
+
             </div>
         <?php else: ?>
             <!-- Empty State -->

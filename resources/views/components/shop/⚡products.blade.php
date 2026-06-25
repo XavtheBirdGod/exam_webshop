@@ -3,11 +3,14 @@
 use Livewire\Component;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Url;
+use Livewire\WithPagination;
 use App\Models\Product;
 use App\Models\Category;
 
 new #[Layout('components.layouts.app')] class extends Component
 {
+    use WithPagination;
+
     #[Url(as: 'q')]
     public string $search = '';
 
@@ -17,6 +20,12 @@ new #[Layout('components.layouts.app')] class extends Component
     public function selectCategory(?int $id): void
     {
         $this->selectedCategory = $id;
+        $this->resetPage();
+    }
+
+    public function updatingSearch()
+    {
+        $this->resetPage();
     }
 
     public function with(): array
@@ -37,7 +46,7 @@ new #[Layout('components.layouts.app')] class extends Component
         }
 
         return [
-            'products' => $query->get(),
+            'products' => $query->paginate(12),
             'categories' => $categories,
             'totalProductCount' => Product::where('status', 'active')->count(),
         ];
@@ -164,6 +173,11 @@ new #[Layout('components.layouts.app')] class extends Component
                         </div>
                     </div>
                 @endforeach
+            </div>
+
+            <!-- Pagination Links -->
+            <div class="mt-16">
+                {{ $products->links(data: ['scrollTo' => false]) }}
             </div>
         @else
             <!-- Empty State -->

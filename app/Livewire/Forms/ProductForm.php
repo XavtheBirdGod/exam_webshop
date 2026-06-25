@@ -56,12 +56,12 @@ class ProductForm extends Form
     /**
      * Store the product using the action.
      */
-    public function store(SaveProductAction $action, ?Product $product = null): Product
+    public function store(SaveProductAction $action, ?Product $product = null, array $extraImagePaths = []): Product
     {
         $this->validate();
 
         // Store uploaded images to the public disk and collect their paths
-        $uploadedPaths = [];
+        $uploadedPaths = $extraImagePaths;
         foreach ($this->images as $image) {
             $path = $image->store('products', 'public');
             $uploadedPaths[] = $path;
@@ -96,7 +96,7 @@ class ProductForm extends Form
     /**
      * Populate form fields from an existing product.
      */
-    public function fillFromProduct(Product $product): void
+    public function fillFromProduct(Product $product, ?string $tenantAssetBaseUrl = null): void
     {
         $this->name        = $product->name;
         $this->slug        = $product->slug;
@@ -107,11 +107,20 @@ class ProductForm extends Form
         $this->featured    = (bool) $product->featured;
 
         // Load existing images for preview in the edit form
-        $this->existingImages = $product->images->map(fn ($img) => [
-            'id'         => $img->id,
-            'url'        => asset('storage/' . $img->path),
-            'is_primary' => $img->is_primary,
-        ])->toArray();
+        // If a custom base URL is provided (e.g. from platform admin dashboard),
+        // use it to build direct tenant-domain URLs instead of tenant_asset().
+        $this->existingImages = $product->images->map(function ($img) use ($tenantAssetBaseUrl) {
+            if ($tenantAssetBaseUrl) {
+                $url = rtrim($tenantAssetBaseUrl, '/') . '/tenancy/assets/' . ltrim($img->path, '/');
+            } else {
+                $url = tenant_asset($img->path);
+            }
+            return [
+                'id'         => $img->id,
+                'url'        => $url,
+                'is_primary' => $img->is_primary,
+            ];
+        })->toArray();
 
         $this->variants = $product->variants->map(function ($v) {
             return [
