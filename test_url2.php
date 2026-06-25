@@ -1,0 +1,1 @@
+<?php require 'vendor/autoload.php'; $app = require_once 'bootstrap/app.php'; $app->make(Illuminate\Contracts\Console\Kernel::class)->bootstrap(); $tenant = \App\Models\Tenant::first(); $tenant->run(function() { $p = \App\Models\Product::where('name', 'LIKE', '%Foaming Shower Gel%')->first(); echo $p->getImageUrl(); });

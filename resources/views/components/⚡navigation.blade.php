@@ -64,19 +64,7 @@ new class extends Component
     {
         $user = auth()->user();
         if ($user->isPlatformAdmin()) {
-            $centralDomains = config('tenancy.central_domains', ['localhost']);
-            if (in_array(request()->getHost(), $centralDomains)) {
-                return '/admin/dashboard';
-            }
-            
-            $centralDomain = reset($centralDomains);
-            $scheme = request()->getScheme();
-            $port = request()->getPort();
-            
-            if ($port && !in_array($port, [80, 443])) {
-                return "{$scheme}://{$centralDomain}:{$port}/admin/dashboard";
-            }
-            return "{$scheme}://{$centralDomain}/admin/dashboard";
+            return '/admin/dashboard';
         }
 
         $primaryTenant = $user->tenants()->wherePivotIn('role', ['shop_admin', 'shop_staff'])->first();

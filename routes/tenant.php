@@ -42,6 +42,10 @@ Route::middleware([
         Route::livewire('/register', 'auth.register')->name('tenant.register');
     });
 
+    Route::middleware(['auth', \App\Http\Middleware\CheckPlatformAdmin::class])->group(function () {
+        Route::livewire('/admin/dashboard', 'admin.dashboard')->name('tenant.admin.dashboard');
+    });
+
     // Tenant Backoffice
     Route::middleware(['auth', 'tenant-role:shop_admin,shop_staff'])->prefix('seller')->group(function () {
         Route::livewire('/dashboard', 'seller.dashboard')->name('seller.dashboard');
