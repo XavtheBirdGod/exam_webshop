@@ -6,6 +6,7 @@ use Livewire\Attributes\Validate;
 use App\Services\CartService;
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Models\ProductVariant;
 use Illuminate\Support\Facades\DB;
 
 new #[Layout('components.layouts.app')] class extends Component
@@ -33,9 +34,14 @@ new #[Layout('components.layouts.app')] class extends Component
 
     public function mount()
     {
-        if (auth()->check()) {
-            $this->email = auth()->user()->email;
-            $parts = explode(' ', auth()->user()->name);
+        $user = auth()->user();
+
+        // Only pre-fill from the authenticated user if they are a customer.
+        // Admins and staff may browse the storefront but should not have
+        // their own credentials silently injected into the checkout form.
+        if ($user && $user->role === \App\Enums\Role::CUSTOMER) {
+            $this->email = $user->email;
+            $parts = explode(' ', $user->name);
             $this->first_name = array_shift($parts);
             $this->last_name = implode(' ', $parts);
         }
@@ -55,6 +61,28 @@ new #[Layout('components.layouts.app')] class extends Component
 
         try {
             DB::beginTransaction();
+
+            // Re-validate stock availability for all real variants before creating the order
+            foreach ($items as $item) {
+                if ($item['id'] === 999) continue; // skip mock variant
+
+                $variant = ProductVariant::find($item['id']);
+                if (!$variant) {
+                    session()->flash('error', "Product \"" . $item['name'] . "\" is no longer available.");
+                    DB::rollBack();
+                    return;
+                }
+                if ($variant->stock_available < $item['quantity']) {
+                    $available = $variant->stock_available;
+                    session()->flash('error',
+                        $available > 0
+                            ? "Sorry, only {$available} unit(s) of \"" . $item['name'] . "\" are available. Please update your cart."
+                            : "Sorry, \"" . $item['name'] . "\" is now out of stock. Please remove it from your cart."
+                    );
+                    DB::rollBack();
+                    return;
+                }
+            }
 
             $totalAmount = 0;
             $lineItems = [];

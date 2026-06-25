@@ -1,59 +1,9 @@
 <?php
-
 use App\Livewire\Forms\LoginForm;
 use App\Livewire\Forms\RegisterForm;
 use Livewire\Component;
 use Livewire\Attributes\Layout;
 use Illuminate\Support\Facades\Auth;
-
-new #[Layout('components.layouts.app')] class extends Component
-{
-    public LoginForm $form;
-    public RegisterForm $registerForm;
-
-    public function login()
-    {
-        $this->form->authenticate();
-
-        $user = auth()->user();
-
-        if ($user->isPlatformAdmin()) {
-            $centralDomains = config('tenancy.central_domains', ['localhost']);
-            if (in_array(request()->getHost(), $centralDomains)) {
-                return redirect()->intended('/admin/dashboard');
-            }
-
-            $centralDomain = reset($centralDomains);
-            $scheme = request()->getScheme();
-            $port = request()->getPort();
-            $portSuffix = ($port && !in_array($port, [80, 443])) ? ":{$port}" : "";
-
-            return redirect()->away("{$scheme}://{$centralDomain}{$portSuffix}/admin/dashboard");
-        }
-
-        $primaryTenant = $user->tenants()->wherePivotIn('role', ['shop_admin', 'shop_staff'])->first();
-
-        if ($primaryTenant && $primaryTenant->domains->count() > 0) {
-            $domain = $primaryTenant->domains->first()->domain;
-            $scheme = request()->getScheme();
-            $port = request()->getPort();
-            $portSuffix = ($port && !in_array($port, [80, 443])) ? ":{$port}" : "";
-
-            return redirect()->away("{$scheme}://{$domain}{$portSuffix}/seller/dashboard");
-        }
-
-        return redirect()->intended('/');
-    }
-
-    public function register()
-    {
-        $user = $this->registerForm->store();
-
-        Auth::login($user);
-
-        return redirect()->to('/');
-    }
-};
 ?>
 
 <div class="min-h-[80dvh] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8" x-data="{ showLogin: true }">
@@ -80,12 +30,26 @@ new #[Layout('components.layouts.app')] class extends Component
                     <div>
                         <label for="email-address" class="block text-sm font-accent uppercase tracking-widest text-[#9a9590] mb-2">Email address</label>
                         <input wire:model="form.email" id="email-address" name="email" type="email" autocomplete="email" required class="appearance-none rounded-full relative block w-full px-6 py-3 border border-white/10 bg-[#0f0f0f] text-[#e8e4df] placeholder-[#9a9590] focus:outline-none focus:ring-2 focus:ring-[#d4a574] focus:border-transparent transition-all sm:text-sm" placeholder="Email address">
-                        @error('form.email') <span class="text-sm text-red-400 mt-1 block font-accent">{{ $message }}</span> @enderror
+                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['form.email'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <span class="text-sm text-red-400 mt-1 block font-accent"><?php echo e($message); ?></span> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                     </div>
                     <div>
                         <label for="password" class="block text-sm font-accent uppercase tracking-widest text-[#9a9590] mb-2">Password</label>
                         <input wire:model="form.password" id="password" name="password" type="password" autocomplete="current-password" required class="appearance-none rounded-full relative block w-full px-6 py-3 border border-white/10 bg-[#0f0f0f] text-[#e8e4df] placeholder-[#9a9590] focus:outline-none focus:ring-2 focus:ring-[#d4a574] focus:border-transparent transition-all sm:text-sm" placeholder="Password">
-                        @error('form.password') <span class="text-sm text-red-400 mt-1 block font-accent">{{ $message }}</span> @enderror
+                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['form.password'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <span class="text-sm text-red-400 mt-1 block font-accent"><?php echo e($message); ?></span> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                     </div>
                 </div>
 
@@ -129,22 +93,50 @@ new #[Layout('components.layouts.app')] class extends Component
                     <div>
                         <label for="reg-name" class="block text-sm font-accent uppercase tracking-widest text-[#9a9590] mb-2">Full name</label>
                         <input wire:model="registerForm.name" id="reg-name" name="name" type="text" autocomplete="name" required class="appearance-none rounded-full relative block w-full px-6 py-3 border border-white/10 bg-[#0f0f0f] text-[#e8e4df] placeholder-[#9a9590] focus:outline-none focus:ring-2 focus:ring-[#d4a574] focus:border-transparent transition-all sm:text-sm" placeholder="Full name">
-                        @error('registerForm.name') <span class="text-sm text-red-400 mt-1 block font-accent">{{ $message }}</span> @enderror
+                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['registerForm.name'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <span class="text-sm text-red-400 mt-1 block font-accent"><?php echo e($message); ?></span> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                     </div>
                     <div>
                         <label for="reg-email" class="block text-sm font-accent uppercase tracking-widest text-[#9a9590] mb-2">Email address</label>
                         <input wire:model="registerForm.email" id="reg-email" name="email" type="email" autocomplete="email" required class="appearance-none rounded-full relative block w-full px-6 py-3 border border-white/10 bg-[#0f0f0f] text-[#e8e4df] placeholder-[#9a9590] focus:outline-none focus:ring-2 focus:ring-[#d4a574] focus:border-transparent transition-all sm:text-sm" placeholder="Email address">
-                        @error('registerForm.email') <span class="text-sm text-red-400 mt-1 block font-accent">{{ $message }}</span> @enderror
+                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['registerForm.email'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <span class="text-sm text-red-400 mt-1 block font-accent"><?php echo e($message); ?></span> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                     </div>
                     <div>
                         <label for="reg-password" class="block text-sm font-accent uppercase tracking-widest text-[#9a9590] mb-2">Password</label>
                         <input wire:model="registerForm.password" id="reg-password" name="password" type="password" required class="appearance-none rounded-full relative block w-full px-6 py-3 border border-white/10 bg-[#0f0f0f] text-[#e8e4df] placeholder-[#9a9590] focus:outline-none focus:ring-2 focus:ring-[#d4a574] focus:border-transparent transition-all sm:text-sm" placeholder="Password">
-                        @error('registerForm.password') <span class="text-sm text-red-400 mt-1 block font-accent">{{ $message }}</span> @enderror
+                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['registerForm.password'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <span class="text-sm text-red-400 mt-1 block font-accent"><?php echo e($message); ?></span> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                     </div>
                     <div>
                         <label for="reg-password-confirmation" class="block text-sm font-accent uppercase tracking-widest text-[#9a9590] mb-2">Confirm password</label>
                         <input wire:model="registerForm.password_confirmation" id="reg-password-confirmation" name="password_confirmation" type="password" required class="appearance-none rounded-full relative block w-full px-6 py-3 border border-white/10 bg-[#0f0f0f] text-[#e8e4df] placeholder-[#9a9590] focus:outline-none focus:ring-2 focus:ring-[#d4a574] focus:border-transparent transition-all sm:text-sm" placeholder="Confirm password">
-                        @error('registerForm.password_confirmation') <span class="text-sm text-red-400 mt-1 block font-accent">{{ $message }}</span> @enderror
+                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['registerForm.password_confirmation'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <span class="text-sm text-red-400 mt-1 block font-accent"><?php echo e($message); ?></span> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                     </div>
                 </div>
 
@@ -156,4 +148,4 @@ new #[Layout('components.layouts.app')] class extends Component
             </form>
         </div>
     </div>
-</div>
+</div><?php /**PATH C:\wamp64\www\exam_webshop\storage\framework\views/livewire/views/207254df.blade.php ENDPATH**/ ?>
